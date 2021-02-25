@@ -12,7 +12,7 @@ def answer():
     start = time.time()
     result = 0
     # lengths of sequences to calculate to find period
-    lengths = [200, 200, 1000, 5000, 20000, 200, 300000, 10**6, 10**8]
+    lengths = [200, 200, 1000, 5000, 20000, 200, 300000, 10**6, 10**7]
     for n, length in zip(range(2, 11), lengths):
         u = fast_ulam(2 * n + 1, 10**11, length)
         print(f'U(2, {2 * n + 1}) =', u)
@@ -46,6 +46,7 @@ def ulam2_diff(b, n):
     and the position after the second even term in the sequence.
     """
     seq = [2, b]                    # first two terms of the sequence
+    s = {2, b}          # set of the terms of the sequence
     diffs = [seq[-1] - seq[-2]]     # sequence of differences
     length = 2                      # length of the sequence
     i = b + 1                       # number to test
@@ -58,26 +59,22 @@ def ulam2_diff(b, n):
 
         if second_even is None:
             # case second even not found
-            for j in range(length - 1):
-                for k in range(j + 1, length):
-                    if seq[j] + seq[k] == i:
-                        count += 1
-                    if count > 1:   # two representations
-                        break
-                if count > 1:   # two representations
-                    break
+            for j in seq:
+                if i - j in s and i - j > j:
+                    count += 1
 
         else:
             # case second even found
-            if i - 2 in seq:
+            if i - 2 in s:
                 count += 1
-            if i - second_even in seq:
+            if i - second_even in s:
                 count += 1
 
         # i has unique representation, i is a ulam number
         if count == 1:
             diffs.append(i - seq[-1])
             seq.append(i)
+            s.add(i)
             length += 1
             if second_even is None and i % 2 == 0:
                 # second even found
