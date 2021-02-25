@@ -41,6 +41,7 @@ def ulam2(b, n):
     Return the n-th term of the Ulam sequence U(2, b).
     """
     seq = [2, b]        # first two terms of the sequence
+    s = {2, b}          # set of the terms of the sequence
     length = 2          # length of the sequence
     i = b + 1           # number to test
     second_even = None  # second even term of the sequence (the first one is 2)
@@ -51,25 +52,21 @@ def ulam2(b, n):
 
         if second_even is None:
             # case second even not found
-            for j in range(length - 1):
-                for k in range(j + 1, length):
-                    if seq[j] + seq[k] == i:
-                        count += 1
-                    if count > 1:   # two representations
-                        break
-                if count > 1:   # two representations
-                    break
+            for j in seq:
+                if i - j in s and i - j > j:
+                    count += 1
 
         else:
             # case second even found
-            if i - 2 in seq:
+            if i - 2 in s:
                 count += 1
-            if i - second_even in seq:
+            if i - second_even in s:
                 count += 1
 
         # i has unique representation, i is a ulam number
         if count == 1:
             seq.append(i)
+            s.add(i)
             length += 1
             if second_even is None and i % 2 == 0:
                 # second even found
@@ -83,9 +80,9 @@ def ulam2(b, n):
 
 if __name__ == '__main__':
     start = time.time()
-    print(ulam(2, 5, 1000))
+    print(ulam(2, 5, 500))
     print(f'Found in {time.time() - start} seconds')
 
     start = time.time()
-    print(ulam2(5, 1000))
+    print(ulam2(5, 10**6))
     print(f'Found in {time.time() - start} seconds')
